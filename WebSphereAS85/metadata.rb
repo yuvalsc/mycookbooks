@@ -1,0 +1,6 @@
+name             'WebSphereAS85'
+maintainer       'Yuval Schwabe'
+maintainer_email 'yuvalsc@gmail.com'
+license          'fundtech'
+description      'Installs/Configures WebSphere Application Server ND v8.5'
+version          '1.1.1'

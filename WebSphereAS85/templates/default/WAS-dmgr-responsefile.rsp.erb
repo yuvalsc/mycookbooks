@@ -1,0 +1,981 @@
+################################################################################
+# Modify this file to meet your environment and topology requirements for an
+# IBM Business Monitor 8.0 Deployment Manager profile.
+################################################################################
+#
+# Windows Operating System Notes:
+#     1. Directory and file paths that have spaces must be enclosed in quotation marks.
+#     2. Directory and file paths that have spaces must use the escaped Windows
+#        directory seperator (\\).
+#     3. Directory and file paths that do not have spaces can use the UNIX
+#        directory seperator (/).
+#
+#...............................................................................
+# Minimal configuration requires the following sections/parameters to be set.
+#          All other values will be defaulted.
+#
+#          This will create a Deployment Manager profile with the following
+#          characteristics:
+#            o IBM WebSphere Admin security is enabled.
+#            o Database product is DB2.
+#            o Monitor database name is "MONITOR".
+#            o Create a new Cognos database.
+#            o Cognos database name is "COGNOSCS".
+#
+# 	1.   WebSphere - General
+#		create/augment
+#		templatePath
+#
+# 	3.   WebSphere - Server Security
+#		adminUserName
+#		adminPassword
+#
+# 	5.   WebSphere - Topology
+#		profileName
+#		profilePath
+#
+# 	6B.  IBM Business Monitor - Database Metadata
+#		wbmDBUserId
+#		wbmDBPassword
+#
+# 	7A.  IBM Business Monitor - Cognos Create a new Cognos database
+#		wbmCognosDBUserName
+#		wbmCognosDBPassword
+#
+#...............................................................................
+# Full configuration require the following sections/parameters to be set:
+# 	1.   WebSphere - General
+#
+# 	2A.  Operating System - General (Linux)
+# 	OR
+# 	2B.  Operating System - General (Windows)
+#
+# 	3.   WebSphere - Server Security
+#
+# 	4.   WebSphere - SSL and Trust Stores
+#
+# 	5.   WebSphere - Topology
+#
+# 	6A.  IBM Business Monitor - Database Design File
+#   OR (
+# 	6B.  IBM Business Monitor - Database Metadata
+# 		AND (
+# 			6B1. IBM Business Monitor - Database DB2_DATASERVER
+# 			OR
+# 			6B2. IBM Business Monitor - Database DB2UDBOS390
+# 			OR
+# 			6B3. IBM Business Monitor - Database ORACLE
+# 			OR
+# 			6B4. IBM Business Monitor - Database MSSQLSERVER_MICROSOFT
+# 		)
+#.	)
+#
+# 	7A.  IBM Business Monitor - Cognos Create a new Cognos database
+# 	OR
+# 	7B.  IBM Business Monitor - Cognos Use an existing Cognos server
+#
+################################################################################
+
+################################################################################
+#
+# 1.   WebSphere - General
+#
+################################################################################
+
+# Parameter:    create/augment
+# Description:
+#          The manageprofiles command creates the runtime environment for a
+#          WebSphere Application Server process in a set of files called a
+#          profile. The profile defines the runtime environment and includes
+#          all of the files that the server processes in the runtime
+#          environment can change.
+#
+# Valid Values:
+#          o create - create a new profile.
+#          o augment - augment an existing profile.
+# Default Value:
+create
+
+# Parameter:    omitAction
+# Description:
+#          An optional parameter that excludes profile features.
+#
+#          Each profile template comes predefined with certain
+#          optional features.
+#
+# Valid Values:
+#          The following optional features can be used with the
+#          "omitAction" parameter for the following profile templates:
+#
+#            * default - Deployment Manager
+#              o deployAdminConsole
+# Default Value:
+#omitAction=deployAdminConsole
+
+# Parameter:    templatePath
+# Description:
+#          Specify the directory path to the template files in the
+#          installation root directory.
+#
+#          Within the profileTemplates directory are various
+#          directories that correspond to different profile types and
+#          that vary with the type of product installed. The profile
+#          directories are the paths that you indicate while using
+#          the -templatePath option.
+#
+#          You can specify a relative path for the "templatePath"
+#          parameter if the profile templates are relative to the
+#          app_server_root/profileTemplates directory. Otherwise,
+#          specify the fully qualified template path.
+# Valid Values:
+#          A fully qualified directory path.
+# Default Value:
+templatePath=<%= @profileTemplatePath %>/profileTemplates/management
+
+################################################################################
+#
+# 2A.  Operating System - General (Linux)
+#
+################################################################################
+
+# Parameter:    enableService
+# Description:
+#          Specify the creation of a Linux service.
+#
+#          When the manageprofiles command is run with the
+#          -enableService option set to true , the Linux service is
+#          created with the profile when the command is run by the
+#          root user. When a non-root user runs the manageprofiles
+#          command, the profile is created, but the Linux service is
+#          not. The Linux service is not created because the non-root
+#          user does not have sufficient permission to set up the
+#          service. An INSTCONPARTIALSUCCESS result is displayed at the
+#          end of the profile creation and the profile creation log
+#          app_server_root/logs/manageprofiles_create_profilename.log
+#          contains a message indicating the current user does not have
+#          sufficient permission to set up the Linux service.
+# Valid values:
+#          true - enable the Linux service.
+#          false - do not enable the Linux service.
+# Default value:
+#          false
+#enableService=false
+
+# Parameter:    serviceUserName
+# Description:
+#          Specify the user ID that is used during the creation of the
+#          Linux service so that the Linux service runs from this user
+#          ID.
+#          The Linux service runs whenever the user ID is logged on.
+# Valid Values:
+# Default Value:
+#serviceUserName=root
+
+################################################################################
+#
+# 2B.  Operating System - General (Windows)
+#
+################################################################################
+
+# Parameter:    winserviceAccountType
+# Description:
+#          Specify the type of the owner account of the Windows
+#          service to create.
+#          Uncomment the following ONLY if winserviceCheck="true"
+# Valid values:
+#          specifieduser or localsystem
+# Default value:
+#          localsystem
+#winserviceAccountType=localsystem
+
+# Parameter:    winserviceCheck
+# Description:
+#          Specify whether you want to run this server as a windows
+#          service.
+# Valid Values:
+#          true - run as Windows service.
+#          false - do not run as Windows service.
+# Default Value:
+#          true
+#winserviceCheck=false
+
+# Parameter:    winserviceStartupType
+# Description:
+#          Specify the start up method for the windows service
+#           Uncomment the following ONLY if winserviceCheck="true"
+# Valid Values:
+#          manual - windows service must be started manually.
+#          automatic - windows service will start automatically after
+#          reboot.
+#          disabled - service is disabled.
+# Default Value:
+#          automatic
+#winserviceStartupType=automatic
+
+################################################################################
+#
+# 3.   WebSphere - Server Security
+#
+# NOTE:
+#    o "adminUserName" and "adminPassword" should only be uncommented when
+#       enableAdminSecurity="true".
+#    o If enableAdminSecurity="false", "adminUserName: and "adminPassword" will
+#      be disregarded.
+#    o If enableAdminSecurity="true", "adminUserName: and "adminPassword" are
+#      required and must be filled out.
+#
+################################################################################
+
+# Parameter:    enableAdminSecurity
+# Description:
+#          Choose whether to enable Administrative security during the
+#          installation process.
+#
+#          If profileType="custom", Administrative security should be
+#          disabled, use enableAdminSecurity="false"
+#
+# Valid Values:
+#          true - Administrative security is enabled, user name and
+#          password required.
+#          false - Administrative security is not enabled.
+# Default Value:
+#          true
+#enableAdminSecurity=true
+
+# Parameter:    adminUserName
+# Description:
+#          Specify the WebSphere user name for administrative security
+# Valid Values:
+#          a character string - do not use the following characters:
+#          /, \, *, , , :, ;, =, +, ?, |, <, >, &, %, ', ", ]]&gt;,
+#          #, $, ^, {, }
+#           NOTE: a period (.) is not valid if it is the first character.
+# Default Value:
+adminUserName=wasadm
+
+# Parameter:    adminPassword
+# Description:
+#          Specify the password for the WebSphere user specified in
+#          adminUserName
+# Valid Values:
+#          A character string
+# Default Value:
+adminPassword=wasadm
+
+################################################################################
+#
+# 4.   WebSphere - SSL and Trust Stores
+#
+################################################################################
+
+# Parameter:    keyStorePassword
+# Description:
+#          Specify the password to use on all keystore files created
+#          during profile creation. Keystore files are created for the
+#          default personal certificate and the root signing
+#          certificate.
+# Valid Values:
+#          A character string.
+# Default Value:
+#keyStorePassword=myKeyStorePassword
+
+# Parameter:    personalCertDN
+# Description:
+#          Specify the distinguished name of the personal certificate
+#          that you are creating when you create the profile. Specify
+#          the distinguished name in quotation marks. This default personal
+#          certificate is located in the server keystore file.
+#
+#          See the -personalCertValidityPeriod parameter and the
+#          -keyStorePassword parameter.
+# Valid Values:
+#          A fully qualified distingushed name.
+# Default Value:
+#          A fully qualified distingushed name consisting of:
+#          Common name(cn): The long form host name on which the
+#            certificate resides.
+#          Organization unit(ou): This profile's cellName value.
+#          Organization unit(ou): This profile's nodeName value.
+#          Organization(o): The organization portion of the
+#            distinguished name.
+#          Country(c): The two character country code of the
+#            current operating system.
+#personalCertDN=cn=my.long.hostname.com,ou=myNode01Cell,ou=myNode01,o=IBM,c=US
+
+# Parameter:    personalCertValidityPeriod
+# Description:
+#          Specify the amount of time in years that the default
+#          personal certificate is valid.
+# Valid Values:
+#          integer
+# Default Value:
+#          1
+#personalCertValidityPeriod=1
+
+# Parameter:    signingCertDN
+# Description:
+#          Specify the distinguished name of the root signing
+#          certificate that you create when you create the profile.
+#          Specify the distinguished name in quotation marks.
+#          This default personal certificate is located in the server
+#          keystore file.
+# Valid Values:
+#          A fully qualified distingushed name.
+# Default Value:
+#          A fully qualified distingushed name consisting of:
+#          Common name(cn): The long form host name on which the
+#            certificate resides.
+#          Organization unit(ou): "Root Certificate"
+#          Organization unit(ou): This profile's cellName value.
+#          Organization unit(ou): This profile's nodeName value.
+#          Organization(o): The organization portion of the
+#            distinguished name.
+#          Country(c): The two character country code of the
+#            current operating system.
+#signingCertDN=cn=my.long.hostname.com,ou=Root Certificate,ou=myNode01Cell,ou=myNode01,o=IBM,c=US
+
+# Parameter:    signingCertValidityPeriod
+# Description:
+#          Specify the amount of time in years that the root signing
+#          certificate is valid
+# Valid Values:
+#          integer
+# Default Value:
+#          15
+#signingCertValidityPeriod=15
+
+################################################################################
+#
+# 5.   WebSphere - Topology
+#
+################################################################################
+
+# Parameter:  defaultPorts
+# Description:
+#          Assigns the default or base port values to the profile.
+#
+#          Do not use this parameter when using the -startingPort or -portsFile
+#          parameter.
+# Valid Values:
+#          Varies
+#
+# Parameter:  startingPort
+# Description:
+#          Specifies the starting port number for generating and assigning all ports
+#          for the profile.
+#
+#          Port values are assigned sequentially from the -startingPort value,
+#          omitting those ports that are already in use. The system recognizes and
+#          resolves ports that are currently in use and determines the port
+#          assignments to avoid port conflicts.
+#
+#          Do not use this parameter when using the -defaultPorts or -portsFile
+#          parameter.
+# Valid Values:
+#    Varies
+#
+# Parameter:    portsFile
+# Description:
+#          Explicitly define the ports to use for this profile.
+#
+#          An optional parameter that specifies the path to a file that defines port
+#          settings for the new profile.
+#
+#          Do not use this parameter when using the -startingPort or -defaultPorts
+#          parameter.
+# Valid Values:
+#          A fully qualified path to a ports file.
+# Example Ports File Contents:
+#          WC_defaulthost=39080
+#          WC_adminhost=39060
+#          WC_defaulthost_secure=39443
+#          WC_adminhost_secure=39043
+#          BOOTSTRAP_ADDRESS=32809
+#          SOAP_CONNECTOR_ADDRESS=38880
+#          SAS_SSL_SERVERAUTH_LISTENER_ADDRESS=39401
+#          CSIV2_SSL_SERVERAUTH_LISTENER_ADDRESS=39403
+#          CSIV2_SSL_MUTUALAUTH_LISTENER_ADDRESS=39402
+#          ORB_LISTENER_ADDRESS=39100
+#          DCS_UNICAST_ADDRESS=39353
+#          SIB_ENDPOINT_ADDRESS=37276
+#          SIB_ENDPOINT_SECURE_ADDRESS=37286
+#          SIB_MQ_ENDPOINT_ADDRESS=35558
+#          SIB_MQ_ENDPOINT_SECURE_ADDRESS=35578
+#          SIP_DEFAULTHOST=35060
+#          SIP_DEFAULTHOST_SECURE=35061
+#defaultPorts=default_ports
+startingPort=9060
+#portsFile="C:\\Program Files\\IBM\\WebSphere\\AppServer\\portsFile.properties"
+
+# Parameter:    cellName
+# Description:
+#          Specify the cell name of the profile. Use a unique cell
+#          name for each profile.
+#
+#          This is an optional parameter. If you omit the parameter, a
+#          default cell name is assigned.
+# Valid Values:
+#          The value for this parameter must not contain spaces or any
+#          characters that are not valid such as the following: *, ?,
+#          ", <, >, ,, /, \, |, and so on.
+# Default Value:
+#          The default value for this parameter is based on a
+#          combination of the short host name, the constant cell, and
+#          a trailing number:
+#            * Application server profile: Not any
+#            * Custom profile: Not any
+#            * Management profile with the deployment manager
+#              server: shortHostNameCellCellNumber
+#            * Management profile with the job manager server:
+#              shortHostNameJobMgrCellCellNumber
+#            * Management profile with the administrative agent
+#              server: shortHostNameAACellCellNumber
+#            * Cell profile, application server portion:
+#              shortHostNameCellCellNumber
+#            * Cell profile, deployment manager portion:
+#              shortHostNameCellCellNumber
+#            * Secure proxy profile: Not any
+#          where CellNumber is a sequential number starting at 01.
+cellName=<%= @cellName%>
+
+# Parameter:    nodeName
+# Description:
+#          Specify the node name for the node that is created with the
+#          new profile.
+#          Use a unique value on the machine. Each profile that shares
+#          the same set of product binaries must have a unique node
+#          name.
+# Valid Values:
+#          The value for this parameter must not contain spaces or any
+#          characters that are not valid such as the following: *, ?,
+#          ", <, >, ,, /, \, |, and so on.
+# Default Value:
+#          The default value for this parameter is based on the short
+#          host name, profile type, and a trailing number:
+#            * Application server profile:
+#              shortHostNameNodeNodeNumber
+#            * Custom profile: shortHostNameNodeNodeNumber
+#            * Management profile with the deployment manager
+#              server: shortHostNameCellManagerNodeNumber
+#            * Management profile with the job manager server:
+#              shortHostNameJobMgrNodeNumber
+#            * Management profile with the administrative agent
+#              server: shortHostNameAANodeNodeNumber
+#            * Cell profile, application server portion:
+#              shortHostNameNodeNodeNumber
+#            * Cell profile, deployment manager portion:
+#              shortHostNameCellManagerNodeNumber
+#            * Secure proxy profile: shortHostNameNodeNodeNumber
+#
+#          where NodeNumber is a sequential number starting at 01.
+nodeName=<%= @nodeName%>
+
+# Parameter:    hostName
+# Description:
+#          Specify the host name where you are creating the profile.
+#          This should match the host name that you specified during
+#          installation of the initial product.
+#
+#          The value for this parameter must be a valid IPv6 host name
+#          and must not contain spaces or any characters that are not
+#          valid such as the following:
+#          *, ?, ", <, >, ,, /, \, |, and so on.
+# Valid Values:
+# Default Value:
+#          The default value for this parameter is the long form of
+#          the domain name system.
+hostName=<%= @hostname%>
+
+# Parameter:    profileName
+# Description:
+#          Specify the name of the profile. Use a unique value when
+#          creating a profile. Each profile that shares the same set
+#          of product binaries must have a unique name.
+#          The default profile name is based on the profile type and
+#          a trailing number, for example:
+#          <profile_type><profile_number>
+#            where
+#              <profile_type> is a value such as WBMon, AppSrv,
+#                Dmgr, AdminAgent, JobMgr, or Custom.
+#              <profile_number> is a sequential number that
+#                creates a unique profile name.
+#
+#          The profile name that you choose must not be in use.
+# Valid Values:
+#          The value for this parameter must not contain spaces or any
+#          characters that are not valid such as the following: *, ?,
+#          ", <, >, ,, /, \, |, and so on.
+# Default Value:
+#          WBMonxx
+profileName=<%= @profileName%>
+
+# Parameter:    profilePath
+# Description:
+#          Specify the fully qualified path to the profile, which is
+#          referred to as the profile_root.
+#
+#          If the fully qualified path contains spaces, enclose the
+#          value in quotation marks.
+#
+#          The value for this parameter must be a valid path for the
+#          target system and must not be currently in use.
+#
+#          You must have permissions to write to the directory.
+# Valid Values:
+#          A fully qualified directory path.
+# Default Value:
+#          The default value is based on the app_server_root
+#          directory, the profiles subdirectory, and the name of the
+#          profile.
+profilePath=<%= @profilePath%>
+
+################################################################################
+#
+# 6A.  BM Business Monitor - Database Design File
+#
+# NOTE: IF you have a database design file to create the IBM Business Monitor
+#       database:
+#           1. Configure this section.
+#        ELSE:
+#           1. Configure the section titled "IBM Business Monitor - Database
+#              Metadata"
+#           2. Configure the section titled "IBM Business Monitor - Database
+#              <wbmDBType>".
+#
+################################################################################
+
+# Parameter:    wbmDbDesign
+# Description:
+#          Specify the path to a database design document, which holds
+#          the database configuration for the topology you are
+#          creating.
+#
+#          If you include this property, the value must be the
+#          complete path name for the database design file.
+# Valid Values:
+#          A fully qualified file path.
+# Default Value:
+#wbmDbDesign="C:\\Program Files\\IBM\\WebSphere\\AppServer\\util\\dbUtils\\monitor.nd.topology.dbDesign"
+
+# Parameter:    wbmDBDelayConfig
+# Description:
+#          Specify whether you want to create the IBM Business Monitor
+#          database during this manageprofiles execution.
+#
+#          If you ignore this parameter or set the value to false, a
+#          local database is created on the machine where the profile
+#          is created.
+#
+#          If you set the value to true, the database and all required
+#          tables are not created during the installation. You can use
+#          existing tables that have been created previously, or you
+#          can use the database scripts to create the database and
+#          tables manually.
+#
+#          The DDLs are generated regardless of the value of this
+#          parameter.
+#
+#          Note: If the database server contains multiple versions of
+#          DB2 installed, or multiple DB2 instances, profile creation
+#          will use the server's default DB2 version or instance. To
+#          control which DB2 version or instance is used, use the
+#          "Installing the database manually" procedure so that the
+#          database administrator can ensure that the proper DB2
+#          version or instance is used.
+# Valid Values:
+#          true - delay creation of the IBM Business Monitor database.
+#          false - do not delay creation of the IBM Business Monitor
+#          database.
+# Default Value:
+#          false
+#wbmDBDelayConfig=false
+
+################################################################################
+#
+# 6B.  IBM Business Monitor - Database Metadata
+#
+# NOTE: If you do not have a database design file to create the IBM Business
+#       Monitor database:
+#           1. Configure this section.
+#           2. Configure the section titled "IBM Business Monitor - Database
+#              <wbmDBType>".
+#
+################################################################################
+
+# Parameter:    wbmDBType
+# Description:
+#          Specify the database product that the IBM Business Monitor
+#          database will be created.
+# Valid Values:
+#          Must be one of the following:
+#            DB2_DATASERVER
+#            DB2UDBOS390
+#            ORACLE
+#            MSSQLSERVER_MICROSOFT
+# Default Value:
+#          DB2_DATASERVER
+#wbmDBType=DB2_DATASERVER
+
+# Parameter:    wbmDBOutputScriptDir
+# Description:
+#          Specify the directory where the DDLs will be created.
+#          The generated DDLs can be run manually on the database
+#          server.
+# Valid Values:
+#          A fully qualified directory path.
+# Default Value:
+#          <PROFILE_HOME>/dbscripts/Monitor
+#          where <PROFILE_HOME> is the value of the "profilePath"
+#          parameter.
+#wbmDBOutputScriptDir="C:\\Program Files\\IBM\\WebSphere\\AppServer\\profiles\\Dmgr01\\dbscripts\\Monitor"
+
+# Parameter:    wbmDBName
+# Description:
+#          Specify the name of the database.
+# Valid Values:
+# Default Value:
+#          If "wbmDBType" is,       then "wbmDBName" is
+#          ===================      ===================
+#          DB2_DATASERVER           MONITOR
+#          DB2UDBOS390              MONITOR
+#          ORACLE                   orcl
+#          MSSQLSERVER_MICROSOFT    MONITOR
+#wbmDBName=MONITOR
+
+# Parameter:    wbmDBSchemaName
+# Description:
+#          Specify the name of the schema.
+#          This value must be in all uppercase.
+# Valid Values:
+# Default Value:
+#          MONITOR
+#wbmDBSchemaName=DMGR01
+
+# Parameter:    wbmDBDelayConfig
+# Description:
+#          Specify whether you want to create the IBM Business Monitor
+#          database during this manageprofiles execution.
+#
+#          If you ignore this parameter or set the value to false, a
+#          local database is created on the machine where the profile
+#          is created.
+#
+#          If you set the value to true, the database and all required
+#          tables are not created during the installation. You can use
+#          existing tables that have been created previously, or you
+#          can use the database scripts to create the database and
+#          tables manually.
+#
+#          The DDLs are generated regardless of the value of this
+#          parameter.
+#
+#          Note: If the database server contains multiple versions of
+#          DB2 installed, or multiple DB2 instances, profile creation
+#          will use the server's default DB2 version or instance. To
+#          control which DB2 version or instance is used, use the
+#          "Installing the database manually" procedure so that the
+#          database administrator can ensure that the proper DB2
+#          version or instance is used.
+# Valid Values:
+#          true - delay creation of the IBM Business Monitor database.
+#          false - do not delay creation of the IBM Business Monitor
+#          database.
+# Default Value:
+#          false
+#wbmDBDelayConfig=false
+
+# Parameter:    wbmDBUserId
+# Description:
+#          Specify the user name to access the database.
+#
+#          If you are using Oracle, the "wbmDBSchemaName" and
+#          "wbmDBUserId" must be set to the same value.
+# Valid Values:
+# Default Value:
+#wbmDBUserId=myWBMDBUserId
+
+# Parameter:    wbmDBPassword
+# Description:
+#          Specify the password for the wbmDBUserId.
+# Valid Values:
+# Default Value:
+#wbmDBPassword=myWBMDBPassword
+
+# Parameter:    wbmDBJDBCClasspath
+# Description:
+#          Specify the fully qualified path to the JDBC driver for the
+#          database.
+# Valid Values:
+#          A fully qualified directory path.
+# Default Value:
+#          <WAS_HOME>/jdbcdrivers/<DB_TYPE> where <DB_TYPE> is one of the
+#          following mapped values:
+#            If "wbmDBType" is,      then <DB_TYPE> is
+#            ===================      ===================
+#            DB2_DATASERVER           DB2
+#            DB2UDBOS390              DB2
+#            ORACLE                   Oracle
+#            MSSQLSERVER_MICROSOFT    SQLServer
+#wbmDBJDBCClasspath="C:\\Program Files\\IBM\\WebSphere\\AppServer\\jdbcdrivers\\DB2"
+
+# Parameter:    wbmDBHostName
+# Description:
+#          Specify the host name for the database server.
+#
+#          The value for this parameter must be a valid IPv6 host name
+#          and must not contain spaces or any characters that are not
+#          valid such as the following:
+#          *, ?, ", <, >, ,, /, \, |, and so on.
+# Valid Values:
+#          "localhost" or the long form host name for database server.
+# Default Value:
+#          The current machine's long form host name.
+#wbmDBHostName=my.long.hostname.com
+
+# Parameter:    wbmDBServerPort
+# Description:
+#          Specify the port where the TCP/IP service is assigned or
+#          the port on which the database is listening.
+# Valid Values:
+#          integer
+# Default Value:
+#          DB2_DATASERVER = 50000
+#          DB2UDBOS390 = 8070
+#          ORACLE = 1521
+#          MSSQLSERVER_MICROSOFT = 1433
+#wbmDBServerPort=50000
+
+################################################################################
+#
+# 6B1. IBM Business Monitor - Database DB2_DATASERVER
+#
+# NOTE: No additional parameters are required.
+#
+################################################################################
+
+################################################################################
+#
+# 6B2. IBM Business Monitor - Database DB2UDBOS390
+#
+# NOTE: 1. Uncomment and configure this section to create an
+#           IBM Business Monitor Databases on DB2UDBOS390
+#       2. You must also configure the section titled
+#           "IBM Business Monitor - Database Metadata"
+#
+################################################################################
+
+# Parameter:    wbmDBSubsystem
+# Description:
+#          Specify the location of the DB2 for z/OS database.
+# Valid Values:
+#          No spaces are allowed in the value.
+# Default Value:
+#wbmDBSubsystem=myMonitorDBSubsystem
+
+################################################################################
+#
+# 6B3. IBM Business Monitor - Database ORACLE
+#
+# NOTE: 1. Uncomment and configure this section to create an
+#           IBM Business Monitor Databases on ORACLE
+#       2. You must also configure the section titled
+#           "IBM Business Monitor - Database Metadata"
+#
+################################################################################
+
+# Parameter:    wbmDBDriverType
+# Description:
+#          Specify the driver type for the database.
+#
+#          For an Oracle database, specify either 2 or 4. A value of 2
+#          corresponds to the OCI driver. A value of 4 corresponds to
+#          the Thin driver.
+# Valid Values:
+#          2 | 4
+# Default Value:
+#wbmDBDriverType=4
+
+# Parameter:    wbmDBSysUserId
+# Description:
+#          Specify the name for the Oracle database administrator.
+#          This user must have access to create and drop databases and
+#          users.
+#
+#          This parameter is not required if wbmDBDelayConfig is true
+#          and the database will be created at a later time.
+# Valid Values:
+# Default Value:
+#wbmDBSysUserId=myMonitorDBSAUserId
+
+# Parameter:    wbmDBSysPassword
+# Description:
+#          Specify the password for the Oracle database administrator.
+#          This user must have access to create and drop databases
+#          and users.
+# Valid Values:
+# Default Value:
+#wbmDBSysPassword=myMonitorDBSAPassword
+
+################################################################################
+#
+# 6B4. IBM Business Monitor - Database MSSQLSERVER_MICROSOFT
+#
+# NOTE: 1. Uncomment and configure this section to create an
+#           IBM Business Monitor Databases on MSSQLSERVER_MICROSOFT
+#       2. You must also configure the section titled
+#           "IBM Business Monitor - Database Metadata"
+#
+################################################################################
+
+# Parameter:    wbmDBSysUserId
+# Description:
+#          Specify the name for the SQL Server database administrator.
+#          This user must have access to create and drop databases and
+#          users.
+#
+#          This parameter is not required if wbmDBDelayConfig is true
+#          and the database will be created at a later time.
+# Valid Values:
+# Default Value:
+#wbmDBSysUserId=myMonitorDBSysUserId
+
+# Parameter:    wbmDBSysPassword
+# Description:
+#          Specify the password for the SQL Server database
+#          administrator. This user must have access to create and
+#          drop databases and users.
+# Valid Values:
+# Default Value:
+#wbmDBSysPassword=myMonitorDBSysPassword
+
+################################################################################
+#
+#      IBM Business Monitor - Cognos
+#
+# NOTE: You must:
+#       o Configure the "IBM Business Monitor - Cognos Create a new Cognos
+#         database" section.
+#       OR
+#       o Configure the "IBM Business Monitor - Cognos Use an existing Cognos
+#         server" section.
+#
+################################################################################
+
+################################################################################
+#
+# 7A.  IBM Business Monitor - Cognos Create a new Cognos database
+#
+################################################################################
+# Parameter:    wbmCognosCreateNewServerDB
+# Description:
+#          Specify whether to create a new IBM Cognos BI content store
+#          database.
+# Valid Values:
+#          true - create a new Cognos database.
+#          false - do not create a new Cognos database.
+# Default Value:
+#          true
+#wbmCognosCreateNewServerDB=true
+
+# Parameter:    wbmCognosDBName
+# Description:
+#          Specify the name of the database to use for the IBM Cognos
+#          BI content store database.
+# Valid Values:
+#          This database name must be different from the wbmDBName
+#          (the IBM Business Monitor database name) if the wbmDBType
+#          is MSSQLSERVER_MICROSOFT.
+#
+#          For Oracle, the database name is the Oracle service name.
+# Default Value:
+#          The default value is set by the database design tool
+#          (DbDesignGenerator) if one has been specified. Otherwise,
+#          the default value is COGNOSCS.
+#wbmCognosDBName=COGNOSCS
+
+# Parameter:    wbmCognosDBUserName
+# Description:
+#          Specify the user name for creating the IBM Cognos BI
+#          content store database.
+# Valid Values:
+#          This user name must have credentials to create tables.
+#
+#          Because the database user provided for accessing the
+#          content store database must have privilege to create
+#          tables in the database, it is recommended that you create
+#          a new database user for the content store database only.
+# Default Value:
+#          The default value is set by the database design tool
+#          (DbDesignGenerator) if one has been specified. Otherwise,
+#          the default value is the wbmDBUserName value.
+#wbmCognosDBUserName=myCognosDBUserName
+
+# Parameter:    wbmCognosDBPassword
+# Description:
+#          Specify the password for the supplied wbmCognosDBUserName
+#          user name.
+# Valid Values:
+#          If the wbmCognosDBUserName is the same as the
+#          wbmDBUserName, the passwords must also be the same.
+# Default Value:
+#          The default value is set by the database design tool
+#          (DbDesignGenerator) if one has been specified. Otherwise,
+#          the default value is the wbmDBPassword value.
+#wbmCognosDBPassword=myCognosDBPassword
+
+################################################################################
+#
+# 7B.  IBM Business Monitor - Cognos Use an existing Cognos server
+#
+################################################################################
+
+# Parameter:    wbmCognosUseExistingServer
+# Description:
+#          Specify whether to use an existing IBM Cognos BI server.
+# Valid Values:
+#          true - use and existing IBM Cognos BI server.
+#          false - do not use an existing IBM Cognos BI server.
+#
+#          If the wbmCognosDBUserName is the same as the
+#          wbmDBUserName, the passwords must also be the same.
+# Default Value:
+#          boolean true/false
+#          The default value is true if the app_server_root/Cognos
+#          directory does not exist, and false otherwise.
+#
+#          This value must not be the same as the
+#          wbmCognosCreateNewServerDB value.
+#wbmCognosUseExistingServer=false
+
+# Parameter:    wbmCognosUrl
+# Description:
+#          Specify the external dispatcher URI of the IBM Cognos BI
+#          server.
+# Valid Values:
+#          You can find this URI in the IBM Cognos BI configuration
+#          client in Local Configuration > Environment > Dispatcher
+#          Settings
+#          (for example, http://my_host:my_port/p2pd/servlet/dispatch/ext).
+#
+#          The IBM Cognos BI server does not have to be available to
+#          set this value.
+#
+#          The server is required when you install monitor models if
+#          you want to perform multidimensional analysis for those
+#          models.
+# Default Value:
+#wbmCognosUrl=http://my_host:my_port/p2pd/servlet/dispatch/ext
+
+# Parameter:    wbmCognosAdminUserName
+# Description:
+#          Specify the administrator username for the IBM Cognos BI server.
+# Valid Values:
+# Default Value:
+#wbmCognosAdminUserName=wsadmin
+
+# Parameter:    wbmCognosAdminPassword
+# Description:
+#          Specify the administrator password for the IBM Cognos BI server.
+# Valid Values:
+# Default Value:
+#wbmCognosAdminPassword=wsadmin

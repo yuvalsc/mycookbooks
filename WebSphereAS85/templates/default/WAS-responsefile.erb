@@ -1,0 +1,18 @@
+<agent-input clean="true" temporary="true">
+<server>
+<repository location='<%= @wasbinarypath %>' />
+</server>
+<install modify='false'>
+<offering id='<%= @wasid %>'
+  profile='<%= @wasdesc %>'
+  features='<%= @wasfeatures %>' installFixes='none'/>
+</install>
+<profile id='<%= @wasdesc %>'
+  installLocation='<%= @waspath %>'>
+<data key='eclipseLocation' value='<%= @waspath %>'/>
+<data key='user.import.profile' value='false'/>
+<data key='cic.selector.nl' value='en'/>
+</profile>
+<preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='<%= @imsharedpath %>'/>
+<preference name='com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts' value='false'/>
+</agent-input>

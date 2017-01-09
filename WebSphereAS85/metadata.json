@@ -1,0 +1,51 @@
+{
+  "name": "WebSphereAS85",
+  "description": "Installs/Configures WebSphere Application Server ND v8.5",
+  "long_description": "",
+  "maintainer": "Yuval Schwabe",
+  "maintainer_email": "yuval.schwabe@dh.com",
+  "license": "",
+  "platforms": {
+
+  },
+  "dependencies": {
+
+  },
+  "recommendations": {
+
+  },
+  "suggestions": {
+
+  },
+  "conflicting": {
+
+  },
+  "providing": {
+
+  },
+  "replacing": {
+
+  },
+  "attributes": {
+
+  },
+  "groupings": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "1.0.0",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

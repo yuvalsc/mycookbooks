@@ -1,0 +1,8 @@
+name             'weblogic'
+maintainer       'Yuval Schwabe'
+maintainer_email 'yuvalsc@gmail.com'
+license          'fundtech'
+description      'Installs/Configures weblogic Application Server 12.1.2'
+version          '2.1.7'
+depands          'tar', '>= 0.7.0'
+depands          'oracle-inventory', '>= 0.0.0'

@@ -1,0 +1,22 @@
+{
+  "name": "weblogic",
+  "version": "2.1.7",
+  "description": "Installs/Configures fusion-middleware family of products",
+  "long_description": "",
+  "maintainer": "YS",
+  "maintainer_email": "yuvalsc@gmail.com",
+  "license": "Apache 2.0",
+  "platforms": {},
+  "dependencies": {
+    "oracle-inventory": ">= 0.0.0",
+    "tar": ">= 0.7.0"
+  },
+  "recommendations": {},
+  "suggestions": {},
+  "conflicting": {},
+  "providing": {},
+  "replacing": {},
+  "attributes": {},
+  "groupings": {},
+  "recipes": {}
+}
