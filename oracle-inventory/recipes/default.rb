@@ -15,7 +15,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 #
-group node['oracle']['inventory']['group']
+group node['oracle']['inventory']['group'] do
+  
+end
 
 user node['oracle']['inventory']['user'] do
   gid node['oracle']['inventory']['group']

@@ -64,13 +64,15 @@ property :installer_file, String, default: lazy {
 
 property :installer_file_hash, String, default: 'E6EFE85F3AEC005CE037BD740F512E23C136635C63E20E02589EE0D0C50C065C'
 property :ownername, String, default: 'oracle'
-property :groupname, String, default: 'dba'
+property :groupname, String, default: 'oinstall'
 property :home, String, default: lazy { "/opt/oracle/Middleware/weblogic-#{version}" }
 property :oracle_home, String, default: lazy { "/opt/oracle" }
 property :java_home, String, default: lazy { "#{oracle_home}/jvm" }
 property :oracle_jdk_file, String, default: 'jdk-7u79-linux-x64.gz'
+property :oracle_jdk_home_folder, String, default: 'jdk1.7.0_79'
 property :oracle_jdk_file_hash, String, default: '29D75D0022BFA211867B876DDD31A271B551FA10727401398295E6E666A11D90'
 property :oracle_patch_file, String, default: 'p16784672_121200_Generic.zip'
+property :oracle_patch_number, String, default: '16784672'
 property :oracle_patch_file_hash, String, default: '712EDE0BFA80C70190772DCE419D329DEF2C4E584C6F88C949E8B206A9CF5DEE'
 property :inventory_path, String, default: lazy { ::File.join(home, 'oraInventory') }
 property :installer_path, String, default: lazy { ::File.join(cache_path, installer_file) }
@@ -90,16 +92,6 @@ property :scp_url, String, default: lazy {
 }
 
 action :install do
-  #node.default['java']['jdk_version'] = oracle_jdk
-  #node.default['java']['install_flavor'] = 'oracle'
-  #node.default['java']['oracle']['accept_oracle_download_terms'] = true
-  #include_recipe 'java'
-  # directory "/home/#{ownername}" do
-  #   owner 'root'
-  #   group 'root'
-  #   mode '0755'
-  #   action :create
-  # end
   group groupname do
   end
 
@@ -111,13 +103,13 @@ action :install do
   node.default['oracle']['inventory']['group'] = groupname
   node.default['oracle']['inventory']['user'] = ownername
 
-  # if Gem::Version.new(version) >= Gem::Version.new('12.1.2.0.0')
-  #   #include_recipe 'oracle-inventory'
-  #   group node['oracle']['inventory']['group'] do
-  #     append true
-  #     members ownername
-  #   end
-  # end
+   if Gem::Version.new(version) >= Gem::Version.new('12.1.2.0.0')
+     include_recipe 'oracle-inventory::default'
+     group node['oracle']['inventory']['group'] do
+       append true
+       members ownername
+     end
+   end
 
   directory cache_path do
     mode 00775
@@ -133,14 +125,7 @@ action :install do
     recursive true
   end
 
-Chef::Log.info("#{installer_url}")
-  # remote_file installer_path do
-  #   mode 00644
-  #   owner ownername
-  #   group groupname
-  #   source installer_url
-  # end
-
+  #Chef::Log.info("#{installer_url}")
   compression installer_url do
     #action :nothing
     target_dir cache_path
@@ -149,40 +134,44 @@ Chef::Log.info("#{installer_url}")
     checksum installer_file_hash
     auser ownername
     agroup groupname
+    uncompress 'false'
+    only_if { Dir["#{home}/wlserver/*"].empty? }
   end
 
   compression patch_url do
     #action :nothing
-    #target_dir patch_home
+    target_dir cache_path
     file_name oracle_patch_file
     scpcommand scp_url
     checksum oracle_patch_file_hash
     auser ownername
     agroup groupname
+    only_if { Dir["#{home}/.patch_storage/#{oracle_patch_number}*"].empty? }
   end
 
   compression java_url do
     target_dir java_home
     file_name oracle_jdk_file
-    creates "#{java_home}/bin"
     scpcommand scp_url
     checksum oracle_jdk_file_hash
     compression_exe 'gunzip'
     compress_char '-f'
     auser ownername
     agroup groupname
+    only_if { Dir["#{java_home}/#{oracle_jdk_home_folder}/bin/*"].empty? }
   end
 
-  compression java_url do
+  compression java_home + '/' + ::File.basename("#{oracle_jdk_file}", ".*") do
     target_dir java_home
-    file_name ::File.basename("#{oracle_jdk_file}", ".gz") #=> jdk-7u79-linux-x64
-    creates "#{java_home}/bin"
-    scpcommand scp_url
+    file_name ::File.basename("#{oracle_jdk_file}", ".*") #=> jdk-7u79-linux-x64
+    #creates "#{java_home}/#{oracle_jdk_home_folder}/bin"
+    do_scp 'false'
     checksum oracle_jdk_file_hash
     compression_exe 'tar'
     compress_char 'xf'
     auser ownername
     agroup groupname
+    only_if { Dir["#{java_home}/#{oracle_jdk_home_folder}/bin/*"].empty? }
   end
 
   template silent_path do
@@ -197,18 +186,39 @@ Chef::Log.info("#{installer_url}")
     )
   end
 
-  # PATH=JAVA_HOME/bin:$PATH
-  # export PATH
   execute "install weblogic server #{version}" do
-    environment "JAVA_HOME" => "#{java_home}"
+    environment 'PATH' => "#{java_home}/#{oracle_jdk_home_folder}/bin:#{ENV['PATH']}"
+    #environment 'JAVA_HOME' => "#{java_home}"
     user ownername
     group groupname
-    #command "java -jar #{installer_path}  #{silent_cmd}#{silent_path}"
-    command "which java"
-    only_if { Dir["#{home}/*"].empty? }
+    command "#{java_home}/#{oracle_jdk_home_folder}/bin/java -jar #{installer_path} #{silent_cmd} #{silent_path}"
+    #command "echo $PATH ; #{java_home}/#{oracle_jdk_home_folder}/bin/java -version"
+    only_if { Dir["#{home}/wlserver/*"].empty? }
     #action :nothing
   end
 
+  execute "install weblogic patch #{oracle_patch_file}" do
+    environment 'PATH' => "#{java_home}/#{oracle_jdk_home_folder}/bin:#{ENV['PATH']}"
+    #environment 'JAVA_HOME' => "#{java_home}"
+    user ownername
+    group groupname
+    command "#{home}/OPatch/opatch apply -silent -jdk #{java_home}/#{oracle_jdk_home_folder}"
+    cwd "#{cache_path}/#{oracle_patch_number}"
+    #not_if do ::File.exist?("#{home}/.patch_storage/#{oracle_patch_number}*") end
+    only_if { Dir["#{home}/.patch_storage/#{oracle_patch_number}*"].empty? }
+    #action :nothing
+  end
+
+  execute "list weblogic version" do
+    environment 'PATH' => "#{java_home}/#{oracle_jdk_home_folder}/bin:#{ENV['PATH']}"
+    #environment 'JAVA_HOME' => "#{java_home}"
+    user ownername
+    group groupname
+    command "#{home}/OPatch/opatch lspatches -jdk #{java_home}/#{oracle_jdk_home_folder}"
+    #action :nothing
+  end
+
+#{}/opt/oracle/Middleware/weblogic-12.1.2/OPatch/opatch apply -silent -jdk /opt/oracle/jvm/jdk1.7.0_79/
   directory cache_path do
     action :delete
     recursive true
